@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3301 | Digital Initiation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --glow-color: rgba(0, 255, 255, 0.8);
+            --pulse-speed: 60s;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #000;
+            color: #0af;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 50, 80, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 100, 100, 0.1) 0%, transparent 20%);
+        }
+
+        .digital-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(to bottom,
+                    rgba(0, 255, 255, 0.03) 0%,
+                    rgba(0, 255, 255, 0.05) 50%,
+                    rgba(0, 255, 255, 0.03) 100%);
+            background-size: 100% 0.3rem;
+            pointer-events: none;
+            z-index: 100;
+            mix-blend-mode: overlay;
+        }
+
+        .digital-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABqSURBVGhD7cExAQAwDMCg+zfdm1ioQeKXzJw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bMmTNnzpw5c+bM3Q3fAhgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQMGDBgwYMCAAQ==');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        .glitch {
+            position: relative;
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-effect 3s infinite linear;
+            text-shadow: 2px 0 3px #0ff;
+        }
+
+        .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-effect 2s infinite linear reverse;
+            text-shadow: -2px 0 3px #f0f;
+        }
+
+        @keyframes glitch-effect {
+            0% { transform: translate(0); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            10% { transform: translate(-2px, 1px); clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%); }
+            20% { transform: translate(2px, -1px); clip-path: polygon(0 40%, 100% 40%, 100% 41%, 0 41%); }
+            30% { transform: translate(-1px, 2px); clip-path: polygon(0 60%, 100% 60%, 100% 61%, 0 61%); }
+            40% { transform: translate(1px, -2px); clip-path: polygon(0 80%, 100% 80%, 100% 81%, 0 81%); }
+            50% { transform: translate(-1px, 1px); clip-path: polygon(20% 0, 21% 100%, 20% 100%, 21% 0); }
+            60% { transform: translate(2px, 2px); clip-path: polygon(40% 0, 41% 100%, 40% 100%, 41% 0); }
+            70% { transform: translate(-2px, -2px); clip-path: polygon(60% 0, 61% 100%, 60% 100%, 61% 0); }
+            80% { transform: translate(1px, -1px); clip-path: polygon(80% 0, 81% 100%, 80% 100%, 81% 0); }
+            90% { transform: translate(-1px, 1px); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+            100% { transform: translate(0); }
+        }
+
+        .terminal-cursor {
+            animation: blink 0.8s step-end infinite, pulse 2s infinite;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px var(--glow-color); }
+            50% { text-shadow: 0 0 15px var(--glow-color); }
+            100% { text-shadow: 0 0 5px var(--glow-color); }
+        }
+
+        .hidden-message {
+            display: none;
+            color: #0f0;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+        }
+
+        .hidden-message.active {
+            display: block;
+            animation: fadeIn 1.5s, scanline 10s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100vh; }
+        }
+
+        .ascii-art {
+            line-height: 1.1;
+            font-size: 10px;
+            letter-spacing: 0;
+            color: #0af;
+            text-shadow: 0 0 5px rgba(0, 170, 255, 0.7);
+        }
+
+        .terminal-input {
+            background-color: rgba(0, 20, 30, 0.7);
+            border: 1px solid #0af;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        }
+
+        .terminal-input:focus {
+            outline: none;
+            border-color: #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to bottom, #003, #006);
+            border: 1px solid #0af;
+            color: #0ff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to bottom, #006, #009);
+            border-color: #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to bottom, #300, #600);
+            border: 1px solid #f00;
+            color: #f88;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(to bottom, #600, #900);
+            border-color: #f44;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .terminal-header {
+            background: linear-gradient(to right, #001, #003);
+            border-bottom: 1px solid #0af;
+        }
+
+        .terminal-body {
+            background: rgba(0, 5, 10, 0.9);
+            border: 1px solid #0af;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.2);
+        }
+
+        .stress-pulse {
+            animation: stressPulse 7s infinite alternate;
+        }
+
+        @keyframes stressPulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .flicker {
+            animation: flicker 5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+            }
+            20%, 22%, 24%, 55% {
+                opacity: 0.5;
+            }
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        #file-download {
+            display: none;
+        }
+
+        .stress-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- Visual Effects -->
+    <div class="digital-scanlines"></div>
+    <div class="digital-noise"></div>
+    <canvas id="matrix-rain" class="matrix-rain"></canvas>
+
+    <!-- Stress Messages (Hidden) -->
+    <div id="stress-message1" class="stress-message">SYSTEM BREACH DETECTED</div>
+    <div id="stress-message2" class="stress-message">UNAUTHORIZED ACCESS</div>
+    <div id="stress-message3" class="stress-message">INTRUDER ALERT</div>
+
+    <div class="max-w-4xl w-full mx-auto stress-pulse flicker">
+        <!-- Main Terminal Interface -->
+        <div class="terminal-body rounded-lg overflow-hidden">
+            <!-- Terminal Header -->
+            <div class="terminal-header px-4 py-2 flex items-center">
+                <div class="flex space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500 pulse"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500 pulse"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500 pulse"></div>
+                </div>
+                <div class="ml-4 text-sm text-cyan-300">[SECURE TERMINAL] 3301_DIGITAL_INITIATION</div>
+                <div class="ml-auto text-xs text-cyan-400" id="terminal-timer">[TIME: 00:00:00]</div>
+            </div>
+
+            <!-- Terminal Content -->
+            <div class="p-4">
+                <div class="glitch mb-6" data-text="CICADA 3301 DIGITAL INITIATION">
+                    <h1 class="text-3xl md:text-4xl font-bold text-center mb-2 text-cyan-400">CICADA 3301 DIGITAL INITIATION</h1>
+                </div>
+
+                <div class="mb-6 text-center text-cyan-300">
+                    <p class="mb-4">[WARNING: THIS SESSION IS MONITORED]</p>
+                    <p class="mb-4">[UNAUTHORIZED ACCESS WILL BE REPORTED]</p>
+                    <p class="text-green-400">[TYPE "HELP" FOR COMMANDS]</p>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex items-center mb-2">
+                        <span class="text-green-400 mr-2">root@3301:~#</span>
+                        <span id="command" class="terminal-cursor">_</span>
+                    </div>
+                    <div id="output" class="mb-4 h-64 overflow-y-auto font-mono text-sm">
+                        <div class="ascii-art mb-4 hidden" id="welcome-ascii">
+  _____ ___ _____ ___    _    ____  ____  _____ ____
+ |_   _|_ _|  ___|_ _|  / \  |  _ \|  _ \| ____|  _ \
+   | |  | || |_   | |  / _ \ | | | | | | |  _| | |_) |
+   | |  | ||  _|  | | / ___ \| |_| | |_| | |___|  _ <
+   |_| |___|_|   |___/_/   \_\____/|____/|_____|_| \_\
+                        </div>
+                    </div>
+                    <input
+                        type="text"
+                        id="terminal-input"
+                        class="terminal-input w-full rounded px-3 py-2 text-green-400"
+                        placeholder="[AWAITING INPUT]"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Hidden Layers of Puzzles -->
+                <div id="layer1" class="hidden">
+                    <div class="border-t border-cyan-800 pt-4 mt-4">
+                        <h3 class="text-lg font-bold mb-3 text-cyan-300">[LAYER 1: PRIME AUTHENTICATION]</h3>
+                        <p class="mb-4 text-cyan-200">ENTER THE 7TH PRIME NUMBER AFTER 17:</p>
+                        <input
+                            type="text"
+                            id="prime-answer"
+                            class="terminal-input w-full rounded px-3 py-2 mb-3 text-green-400"
+                            placeholder="[ANSWER]"
+                        >
+                        <button id="submit-prime" class="btn-primary w-full px-4 py-2 rounded">
+                            [AUTHENTICATE]
+                        </button>
+                    </div>
+                </div>
+
+                <div id="layer2" class="hidden">
+                    <div class="border-t border-cyan-800 pt-4 mt-4">
+                        <h3 class="text-lg font-bold mb-3 text-cyan-300">[LAYER 2: BOOK CIPHER]</h3>
+                        <p class="mb-4 text-cyan-200">DECODE USING GENESIS 1:1 (KJV):</p>
+                        <div class="bg-black bg-opacity-50 p-3 rounded mb-4 border border-cyan-800">
+                            <p class="font-mono text-cyan-400">5-3-1, 2-7-4, 9-2-3</p>
+                        </div>
+                        <input
+                            type="text"
+                            id="book-answer"
+                            class="terminal-input w-full rounded px-3 py-2 mb-3 text-green-400"
+                            placeholder="[DECODED MESSAGE]"
+                        >
+                        <button id="submit-book" class="btn-primary w-full px-4 py-2 rounded">
+                            [DECRYPT]
+                        </button>
+                    </div>
+                </div>
+
+                <div id="layer3" class="hidden">
+                    <div class="border-t border-cyan-800 pt-4 mt-4">
+                        <h3 class="text-lg font-bold mb-3 text-cyan-300">[LAYER 3: VIGENÈRE CIPHER]</h3>
+                        <p class="mb-4 text-cyan-200">DECRYPT WITH KEY "ENLIGHTENMENT":</p>
+                        <div class="bg-black bg-opacity-50 p-3 rounded mb-4 border border-cyan-800">
+                            <p class="font-mono text-cyan-400">XVRWM QI WPEVXVMZI</p>
+                        </div>
+                        <input
+                            type="text"
+                            id="vigenere-answer"
+                            class="terminal-input w-full rounded px-3 py-2 mb-3 text-green-400"
+                            placeholder="[DECRYPTED MESSAGE]"
+                        >
+                        <button id="submit-vigenere" class="btn-primary w-full px-4 py-2 rounded">
+                            [FINAL DECRYPTION]
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <div id="registration" class="hidden-message mt-6">
+                    <div class="border border-green-500 rounded p-4 bg-black bg-opacity-70">
+                        <h3 class="text-xl font-bold text-green-400 mb-2">[INITIATION COMPLETE]</h3>
+                        <p class="mb-4 text-green-300">YOU HAVE PROVEN YOUR WORTH.</p>
+                        <p class="mb-4 text-green-300">PROVIDE YOUR DETAILS TO JOIN THE ARCHIVE.</p>
+
+                        <div class="mb-3">
+                            <label for="initiate-name" class="block mb-1 text-green-400">[CODENAME]:</label>
+                            <input
+                                type="text"
+                                id="initiate-name"
+                                class="terminal-input w-full rounded px-3 py-2 text-green-400"
+                                placeholder="[CHOOSE WISELY]"
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="initiate-email" class="block mb-1 text-green-400">[SECURE CONTACT]:</label>
+                            <input
+                                type="text"
+                                id="initiate-email"
+                                class="terminal-input w-full rounded px-3 py-2 text-green-400"
+                                placeholder="[FOR VERIFICATION ONLY]"
+                            >
+                        </div>
+
+                        <button id="submit-registration" class="btn-primary w-full px-4 py-2 rounded">
+                            [JOIN ARCHIVE]
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Final Message with Local Clue -->
+                <div id="final-message" class="hidden-message mt-6">
+                    <div class="border border-green-500 rounded p-4 bg-black bg-opacity-70">
+                        <h3 class="text-xl font-bold text-green-400 mb-2">[INITIATION COMPLETE]</h3>
+                        <p class="mb-3 text-green-300">YOUR DATA HAS BEEN STORED LOCALLY.</p>
+                        <p class="mb-3 text-green-300">THE FINAL CLUE IS IN YOUR BROWSER'S LOCAL STORAGE.</p>
+                        <p class="text-xs opacity-70 text-green-400">(PRESS F12 → APPLICATION → LOCAL STORAGE)</p>
+                        <div class="mt-4">
+                            <button id="export-db" class="btn-primary w-full px-4 py-2 rounded">
+                                [EXPORT DATABASE TO TEXT FILE]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Access (Admin View) -->
+                <div id="database-view" class="hidden mt-6">
+                    <div class="border border-purple-500 rounded p-4 bg-black bg-opacity-70">
+                        <h3 class="text-xl font-bold text-purple-400 mb-2">[ARCHIVED INITIATES]</h3>
+                        <div id="database-content" class="font-mono text-sm mb-4 max-h-60 overflow-y-auto">
+                            <!-- Database entries will appear here -->
+                        </div>
+                        <button id="export-db-admin" class="btn-primary w-full px-4 py-2 rounded">
+                            [EXPORT TO TEXT FILE]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden download link -->
+        <a id="file-download" class="hidden"></a>
+    </div>
+
+    <!-- Hidden admin access in source -->
+    <!--
+        ADMIN ACCESS: Type "3301admin" in terminal
+        SECRET KEY: illuminati
+        FINAL CLUE: The answer lies in the pattern of primes (check localStorage)
+    -->
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-rain');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const symbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+
+        const alphabet = katakana + latin + nums + symbols;
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const terminalInput = document.getElementById('terminal-input');
+            const output = document.getElementById('output');
+            const command = document.getElementById('command');
+            const welcomeAscii = document.getElementById('welcome-ascii');
+            const timerElement = document.getElementById('terminal-timer');
+
+            // Stress messages
+            const stressMessages = [
+                document.getElementById('stress-message1'),
+                document.getElementById('stress-message2'),
+                document.getElementById('stress-message3')
+            ];
+
+            // Puzzle Layers
+            const layer1 = document.getElementById('layer1');
+            const layer2 = document.getElementById('layer2');
+            const layer3 = document.getElementById('layer3');
+            const registration = document.getElementById('registration');
+            const finalMessage = document.getElementById('final-message');
+            const databaseView = document.getElementById('database-view');
+            const databaseContent = document.getElementById('database-content');
+            const fileDownload = document.getElementById('file-download');
+
+            // Initialize database if not exists
+            if (!localStorage.getItem('cicadaDB')) {
+                localStorage.setItem('cicadaDB', JSON.stringify([]));
+                // Set final clue in localStorage
+                localStorage.setItem('cicadaFinalClue', 'The truth is in the pattern of primes (3, 7, 13, 19, 37...)');
+            }
+
+            // Terminal timer
+            let startTime = Date.now();
+            setInterval(() => {
+                const elapsed = new Date(Date.now() - startTime);
+                const hours = String(elapsed.getUTCHours()).padStart(2, '0');
+                const minutes = String(elapsed.getMinutes()).padStart(2, '0');
+                const seconds = String(elapsed.getSeconds()).padStart(2, '0');
+                timerElement.textContent = `[TIME: ${hours}:${minutes}:${seconds}]`;
+            }, 1000);
+
+            // Random stress effects
+            setInterval(() => {
+                if (Math.random() > 0.95) {
+                    const randomMessage = stressMessages[Math.floor(Math.random() * stressMessages.length)];
+                    randomMessage.style.opacity = 1;
+                    setTimeout(() => {
+                        randomMessage.style.opacity = 0;
+                    }, 500);
+                }
+            }, 10000);
+
+            // Terminal commands
+            const commands = {
+                'help': '[AVAILABLE COMMANDS: ACCESS, CLEAR, ADMIN]',
+                'access': () => {
+                    output.innerHTML += '<p class="text-yellow-400">[ACCESS PROTOCOL INITIATED...]</p>';
+                    setTimeout(() => {
+                        welcomeAscii.classList.remove('hidden');
+                        output.innerHTML += '<p class="text-green-400">[LAYER 1 AUTHENTICATION REQUIRED.]</p>';
+                        layer1.classList.remove('hidden');
+
+                        // Random stress effect
+                        if (Math.random() > 0.7) {
+                            document.body.style.backgroundColor = '#100';
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = '#000';
+                            }, 300);
+                        }
+                    }, 1500);
+                },
+                'admin': () => {
+                    output.innerHTML += '<p class="text-yellow-400">[ADMIN ACCESS REQUIRES AUTHENTICATION KEY:]</p>';
+                    const adminKey = prompt("[ENTER ADMIN KEY]:");
+                    if (adminKey === "illuminati") {
+                        output.innerHTML += '<p class="text-green-400">[ADMIN ACCESS GRANTED.]</p>';
+                        showDatabase();
+                    } else {
+                        output.innerHTML += '<p class="text-red-400">[INVALID KEY. ACCESS DENIED.]</p>';
+                        // Stress effect for wrong admin key
+                        stressMessages[1].style.opacity = 1;
+                        setTimeout(() => {
+                            stressMessages[1].style.opacity = 0;
+                        }, 1000);
+                    }
+                },
+                'clear': () => {
+                    output.innerHTML = '';
+                    welcomeAscii.classList.add('hidden');
+                },
+                '3301admin': () => {
+                    output.innerHTML += '<p class="text-purple-400">[ADMIN CONSOLE ACTIVATED. TYPE "ADMIN" TO PROCEED.]</p>';
+                }
+            };
+
+            // Prime Number Puzzle
+            document.getElementById('submit-prime').addEventListener('click', function() {
+                const answer = document.getElementById('prime-answer').value.trim();
+                if (answer === "37") { // 17, 19, 23, 29, 31, 37 (7th after 17)
+                    output.innerHTML += '<p class="text-green-400">[PRIME AUTHENTICATION SUCCESSFUL.]</p>';
+                    layer1.classList.add('hidden');
+                    setTimeout(() => {
+                        output.innerHTML += '<p class="text-green-400">[LAYER 2 DECRYPTION CHALLENGE LOADED.]</p>';
+                        layer2.classList.remove('hidden');
+
+                        // Stress effect
+                        if (Math.random() > 0.5) {
+                            document.body.style.backgroundColor = '#010';
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = '#000';
+                            }, 200);
+                        }
+                    }, 1000);
+                } else {
+                    output.innerHTML += '<p class="text-red-400">[INCORRECT PRIME SEQUENCE.]</p>';
+                    // Stress effect for wrong answer
+                    stressMessages[2].style.opacity = 1;
+                    setTimeout(() => {
+                        stressMessages[2].style.opacity = 0;
+                    }, 1000);
+                }
+            });
+
+            // Book Cipher Puzzle (Genesis 1:1: "In the beginning God created the heaven and the earth")
+            document.getElementById('submit-book').addEventListener('click', function() {
+                const answer = document.getElementById('book-answer').value.trim().toLowerCase();
+                if (answer === "god created heaven") {
+                    output.innerHTML += '<p class="text-green-400">[BOOK CIPHER DECRYPTED.]</p>';
+                    layer2.classList.add('hidden');
+                    setTimeout(() => {
+                        output.innerHTML += '<p class="text-green-400">[FINAL ENCRYPTION LAYER ACTIVATED.]</p>';
+                        layer3.classList.remove('hidden');
+
+                        // Stress effect
+                        if (Math.random() > 0.5) {
+                            document.body.style.backgroundColor = '#001';
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = '#000';
+                            }, 200);
+                        }
+                    }, 1000);
+                } else {
+                    output.innerHTML += '<p class="text-red-400">[DECRYPTION FAILED. VERIFY YOUR SOURCE.]</p>';
+                    // Stress effect for wrong answer
+                    stressMessages[0].style.opacity = 1;
+                    setTimeout(() => {
+                        stressMessages[0].style.opacity = 0;
+                    }, 1000);
+                }
+            });
+
+            // Vigenère Cipher Puzzle (Decrypts to "SECRET INITIATION")
+            document.getElementById('submit-vigenere').addEventListener('click', function() {
+                const answer = document.getElementById('vigenere-answer').value.trim().toUpperCase();
+                if (answer === "SECRET INITIATION") {
+                    output.innerHTML += '<p class="text-green-400">[FINAL LAYER DECRYPTED.]</p>';
+                    layer3.classList.add('hidden');
+                    setTimeout(() => {
+                        registration.classList.add('active');
+
+                        // Celebration effect
+                        document.body.style.backgroundColor = '#020';
+                        setTimeout(() => {
+                            document.body.style.backgroundColor = '#000';
+                        }, 300);
+                    }, 1500);
+                } else {
+                    output.innerHTML += '<p class="text-red-400">[INCORRECT DECRYPTION KEY.]</p>';
+                    // Stress effect for wrong answer
+                    stressMessages[2].style.opacity = 1;
+                    setTimeout(() => {
+                        stressMessages[2].style.opacity = 0;
+                    }, 1000);
+                }
+            });
+
+            // Registration Form
+            document.getElementById('submit-registration').addEventListener('click', function() {
+                const name = document.getElementById('initiate-name').value.trim();
+                const email = document.getElementById('initiate-email').value.trim();
+
+                if (name && email) {
+                    // Save to localStorage database
+                    const db = JSON.parse(localStorage.getItem('cicadaDB'));
+                    db.push({
+                        name: name,
+                        email: email,
+                        timestamp: new Date().toISOString(),
+                        id: Math.random().toString(36).substr(2, 9)
+                    });
+                    localStorage.setItem('cicadaDB', JSON.stringify(db));
+
+                    output.innerHTML += `<p class="text-green-400">[INITIATE ${name.toUpperCase()} ARCHIVED. WELCOME.]</p>`;
+                    registration.classList.remove('active');
+
+                    // Show final message with local storage clue
+                    setTimeout(() => {
+                        finalMessage.classList.add('active');
+
+                        // Celebration effect
+                        for (let i = 0; i < 5; i++) {
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = i % 2 === 0 ? '#020' : '#000';
+                            }, i * 200);
+                        }
+                    }, 2000);
+                } else {
+                    // Stress effect for missing fields
+                    output.innerHTML += '<p class="text-red-400">[BOTH FIELDS ARE REQUIRED.]</p>';
+                    stressMessages[1].style.opacity = 1;
+                    setTimeout(() => {
+                        stressMessages[1].style.opacity = 0;
+                    }, 1000);
+                }
+            });
+
+            // Database functions
+            function showDatabase() {
+                const db = JSON.parse(localStorage.getItem('cicadaDB'));
+                databaseContent.innerHTML = '';
+
+                if (db.length === 0) {
+                    databaseContent.innerHTML = '<p class="text-purple-400">[NO INITIATES RECORDED.]</p>';
+                } else {
+                    db.forEach(entry => {
+                        databaseContent.innerHTML += `
+                            <div class="border-b border-purple-900 py-2">
+                                <p><span class="text-purple-400">[ID]:</span> ${entry.id}</p>
+                                <p><span class="text-purple-400">[NAME]:</span> ${entry.name}</p>
+                                <p><span class="text-purple-400">[CONTACT]:</span> ${entry.email}</p>
+                                <p><span class="text-purple-400">[DATE]:</span> ${new Date(entry.timestamp).toLocaleString()}</p>
+                            </div>
+                        `;
+                    });
+                }
+
+                databaseView.classList.remove('hidden');
+            }
+
+            // Export database to text file
+            function exportDatabase() {
+                const db = JSON.parse(localStorage.getItem('cicadaDB'));
+                const finalClue = localStorage.getItem('cicadaFinalClue');
+
+                let exportContent = `=== CICADA 3301 INITIATES ARCHIVE ===\n`;
+                exportContent += `=== GENERATED: ${new Date().toISOString()} ===\n\n`;
+
+                if (db.length === 0) {
+                    exportContent += `NO INITIATES RECORDED.\n`;
+                } else {
+                    db.forEach(entry => {
+                        exportContent += `ID: ${entry.id}\n`;
+                        exportContent += `NAME: ${entry.name}\n`;
+                        exportContent += `CONTACT: ${entry.email}\n`;
+                        exportContent += `DATE: ${entry.timestamp}\n\n`;
+                    });
+                }
+
+                exportContent += `=== FINAL CLUE ===\n`;
+                exportContent += `${finalClue}\n`;
+
+                const blob = new Blob([exportContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                fileDownload.href = url;
+                fileDownload.download = 'cicada_initiates.txt';
+                fileDownload.click();
+
+                output.innerHTML += '<p class="text-green-400">[DATABASE EXPORTED TO TEXT FILE.]</p>';
+            }
+
+            // Set up export buttons
+            document.getElementById('export-db').addEventListener('click', exportDatabase);
+            document.getElementById('export-db-admin').addEventListener('click', exportDatabase);
+
+            // Terminal functionality
+            terminalInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    const input = this.value.trim();
+                    this.value = '';
+
+                    output.innerHTML += `<p><span class="text-green-400">root@3301:~#</span> ${input}</p>`;
+
+                    if (commands[input.toLowerCase()]) {
+                        if (typeof commands[input.toLowerCase()] === 'function') {
+                            commands[input.toLowerCase()]();
+                        } else {
+                            output.innerHTML += `<p>${commands[input.toLowerCase()]}</p>`;
+                        }
+                    } else if (input) {
+                        output.innerHTML += `<p class="text-red-400">[COMMAND NOT RECOGNIZED: ${input}]</p>`;
+                        // Random stress effect for invalid command
+                        if (Math.random() > 0.7) {
+                            document.body.style.backgroundColor = '#100';
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = '#000';
+                            }, 100);
+                        }
+                    }
+
+                    // Scroll to bottom
+                    output.scrollTop = output.scrollHeight;
+                }
+            });
+
+            // Focus input on page load
+            terminalInput.focus();
+
+            // Random terminal flicker
+            setInterval(() => {
+                if (Math.random() > 0.9) {
+                    terminalInput.style.borderColor = '#f00';
+                    setTimeout(() => {
+                        terminalInput.style.borderColor = '#0af';
+                    }, 100);
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
